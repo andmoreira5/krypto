@@ -19,20 +19,32 @@ export const CoinCard = ({ coin }: CoinCardProps) => {
               className="w-12 h-12 rounded-full"
             />
             {coin.market_cap_rank <= 3 && (
-              <div className="absolute -top-2 -left-2 bg-brand text-darkBg rounded-full p-1 shadow-md">
+              <div
+                data-testid="awardCoinCard"
+                className="absolute -top-2 -left-2 bg-brand text-darkBg rounded-full p-1 shadow-md"
+              >
                 <Award size={12} strokeWidth={3} />
               </div>
             )}
           </div>
           <div>
-            <h3 className="font-bold text-white uppercase group-hover:text-brand transition-colors leading-tight">
+            <h3
+              data-testid="symbolCoinCard"
+              className="font-bold text-white uppercase group-hover:text-brand transition-colors leading-tight"
+            >
               {coin.symbol}
             </h3>
-            <p className="text-xs text-gray-500 font-medium">{coin.name}</p>
+            <p
+              data-testid="nameCoinCard"
+              className="text-xs text-gray-500 font-medium"
+            >
+              {coin.name}
+            </p>
           </div>
         </div>
 
         <div
+          data-testid="valueCoinCard"
           className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${
             isPositive
               ? "text-green-400 bg-green-400/10"
@@ -48,7 +60,10 @@ export const CoinCard = ({ coin }: CoinCardProps) => {
         <span className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">
           Current price
         </span>
-        <p className="text-2xl font-mono font-bold text-white">
+        <p
+          data-testid="currentPriceCoinCard"
+          className="text-2xl font-mono font-bold text-white"
+        >
           {new Intl.NumberFormat("en-US", {
             style: "currency",
             currency: "USD",
@@ -65,7 +80,10 @@ export const CoinCard = ({ coin }: CoinCardProps) => {
         </div>
         <div className="text-right">
           <p className="text-[10px] uppercase font-bold opacity-50">Rank</p>
-          <p className="text-xs font-bold text-brand">
+          <p
+            data-testid="marketCapRankCoinCard"
+            className="text-xs font-bold text-brand"
+          >
             #{coin.market_cap_rank}
           </p>
         </div>
