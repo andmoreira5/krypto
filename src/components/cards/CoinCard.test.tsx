@@ -1,16 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CoinCard } from "./CoinCard";
 import { render, screen } from "@testing-library/react";
-import type { Coin } from "../../types/crypto";
-
-const mockCoin = {
-  id: "bitcoin",
-  name: "Bitcoin",
-  symbol: "btc",
-  current_price: 50000,
-  price_change_percentage_24h: 5.42,
-  market_cap_rank: 3,
-} as Coin;
+import { mockCoin } from "../../test/mocks/mockCoin";
 
 describe("CoinCard Component", () => {
   it("should render coin name and symbol correctly", () => {
