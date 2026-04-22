@@ -1,8 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { useCoins } from "../hooks/useCoins";
-import { CoinCard } from "../components/cards/CoinCard";
 import { Header } from "../components/layout/Header";
 import { ErrorState } from "../components/ui/error/ErrorState";
+import { ListCoins } from "../components/list/ListCoins";
 
 export const HomeCoinPage = () => {
   const { data, isLoading, isError, error, refetch, isFetching } = useCoins();
@@ -29,11 +29,7 @@ export const HomeCoinPage = () => {
             onRetry={refetch}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {data?.map((coin) => (
-              <CoinCard key={coin.id} coin={coin} />
-            ))}
-          </div>
+          <ListCoins coins={data || []} />
         )}
       </main>
     </div>
