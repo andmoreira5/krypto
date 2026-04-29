@@ -11,6 +11,7 @@ export const getCoinGeckoMarkets = async () => {
       order: "market_cap_desc",
       per_page: 20,
       page: 1,
+      sparkline: true,
     },
   });
   return data;

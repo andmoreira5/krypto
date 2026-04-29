@@ -1,5 +1,6 @@
 import { Award, TrendingDown, TrendingUp } from "lucide-react";
 import type { Coin } from "../../types/crypto";
+import { Sparkline } from "../list/Sparkline";
 
 interface CoinCardProps {
   coin: Coin;
@@ -56,19 +57,32 @@ export const CoinCard = ({ coin }: CoinCardProps) => {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <span className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">
-          Current price
-        </span>
-        <p
-          data-testid="currentPriceCoinCard"
-          className="text-2xl font-mono font-bold text-white"
-        >
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(coin.current_price)}
-        </p>
+      <div className="flex items-end justify-between gap-2">
+        <div className="space-y-1">
+          <span className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">
+            Current price
+          </span>
+          <p
+            data-testid="currentPriceCoinCard"
+            className="text-2xl font-mono font-bold text-white"
+          >
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(coin.current_price)}
+          </p>
+        </div>
+        {coin.sparkline_in_7d?.price && (
+          <div
+            data-testid="sparklineCoinCard"
+            className="flex-1 max-w-25 h-12 mb-1"
+          >
+            <Sparkline
+              data={coin.sparkline_in_7d.price}
+              isPositive={isPositive}
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-gray-400">
