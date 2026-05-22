@@ -1,8 +1,26 @@
 import { describe, expect, it, vi } from "vitest";
 import { CoinCard } from "./CoinCard";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { mockCoin } from "../../test/mocks/mockCoin";
 import type { LineProps, ResponsiveContainerProps } from "recharts";
+
+vi.mock("../../context/hooks/useAppContext", () => ({
+  useAppContext: () => ({
+    setSelectedCoinId: vi.fn(),
+    setIsModalCoinVisible: vi.fn(),
+  }),
+}));
+
+const mockSetSelectedCoinId = vi.fn();
+const mockSetIsModalCoinVisible = vi.fn();
+
+vi.mock("../../context/hooks/useAppContext", () => ({
+  useAppContext: () => ({
+    setSelectedCoinId: mockSetSelectedCoinId,
+    setIsModalCoinVisible: mockSetIsModalCoinVisible,
+  }),
+}));
 
 vi.mock("recharts", async () => {
   const original = await vi.importActual<typeof import("recharts")>("recharts");
@@ -26,6 +44,8 @@ const negativeMockCoin = {
 };
 
 describe("CoinCard Component", () => {
+  vi.clearAllMocks();
+
   it("should render coin name and symbol correctly", () => {
     render(<CoinCard coin={mockCoin} />);
     expect(screen.getByTestId("nameCoinCard")).toHaveTextContent("Bitcoin");
@@ -97,5 +117,24 @@ describe("CoinCard Component", () => {
     render(<CoinCard coin={coinWithoutData} />);
     const sparkline = screen.queryByTestId("sparklinePath");
     expect(sparkline).not.toBeInTheDocument();
+  });
+
+  describe("Interactions", () => {
+    it("should trigger context actions when card is clicked", async () => {
+      render(<CoinCard coin={mockCoin} />);
+
+      const card = screen
+        .getByTestId("nameCoinCard")
+        .closest(".cursor-pointer");
+      expect(card).toBeInTheDocument();
+
+      await userEvent.click(card!);
+
+      expect(mockSetIsModalCoinVisible).toHaveBeenCalledWith(true);
+      expect(mockSetIsModalCoinVisible).toHaveBeenCalledTimes(1);
+
+      expect(mockSetSelectedCoinId).toHaveBeenCalledWith(mockCoin.id);
+      expect(mockSetSelectedCoinId).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Coin } from "../../types/crypto";
 import { Search, X } from "lucide-react";
 import { CoinCard } from "../cards/CoinCard";
+import { CoinModal } from "../modal/coin modal/CoinModal";
 
 interface ListCoinProps {
   coins: Coin[];
@@ -59,6 +60,7 @@ export const ListCoins = ({ coins }: ListCoinProps) => {
           </p>
         </div>
       )}
+      <CoinModal />
     </div>
   );
 };

@@ -1,0 +1,128 @@
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
+import { useCoinModalData } from "./hooks/useCoinModal";
+import { HeaderCoinModal } from "./HeaderCoinModal";
+import { ErrorCoinModal } from "./ErrorCoinModal";
+import { SkeletonCoinModal } from "./SkeletonCoinModal";
+
+export const CoinModal = () => {
+  const { isModalCoinVisible, chartData, isLoading, error, handleClose } =
+    useCoinModalData();
+
+  if (!isModalCoinVisible) return null;
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: value < 1 ? 4 : 2,
+    }).format(value);
+  };
+
+  const formatChartDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  return (
+    <div
+      data-testid="coinModalOverlay"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-300"
+      onClick={handleClose}
+    >
+      <div
+        data-testid="coinModalContent"
+        className="relative w-full max-w-3xl bg-slate-950 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <HeaderCoinModal handleClose={handleClose} />
+
+        <div>
+          {isLoading && <SkeletonCoinModal />}
+
+          {error && !isLoading && (
+            <ErrorCoinModal error={error} handleClose={handleClose} />
+          )}
+
+          {!isLoading && !error && chartData.length > 0 && (
+            <div
+              data-testid="modalChartContainer"
+              style={{ minWidth: 0 }}
+              className="space-y-4 animate-fade-in w-full h-52 mt-2 min-w-0"
+            >
+              <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+
+                  <XAxis
+                    dataKey="x"
+                    tickFormatter={formatChartDate}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 10 }}
+                    dy={10}
+                  />
+
+                  <YAxis
+                    dataKey="y"
+                    domain={["auto", "auto"]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 10 }}
+                  />
+
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-slate-900 border border-white/10 p-2.5 rounded-xl shadow-xl text-left">
+                            <p className="text-[10px] text-slate-400 font-medium">
+                              {new Date(data.x).toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                            <p className="text-sm font-bold text-blue-400 mt-0.5">
+                              {formatCurrency(data.y)}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+
+                  <Area
+                    type="monotone"
+                    dataKey="y"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorPrice)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

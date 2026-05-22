@@ -1,12 +1,48 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mockCoin } from "../../test/mocks/mockCoin";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ListCoins } from "./ListCoins";
+import type { LineProps, ResponsiveContainerProps } from "recharts";
+
+vi.mock("../../context/hooks/useAppContext", () => ({
+  useAppContext: () => ({
+    setSelectedCoinId: vi.fn(),
+    setIsModalCoinVisible: vi.fn(),
+  }),
+}));
+
+vi.mock("recharts", async () => {
+  const original = await vi.importActual<typeof import("recharts")>("recharts");
+  return {
+    ...original,
+    ResponsiveContainer: ({ children }: ResponsiveContainerProps) => (
+      <div>{children}</div>
+    ),
+    LineChart: ({ children }: { children: React.ReactNode }) => (
+      <svg>{children}</svg>
+    ),
+    Line: ({ stroke }: LineProps) => (
+      <path data-testid="sparklinePath" stroke={stroke} />
+    ),
+  };
+});
 
 const mockCoins = [
   mockCoin,
-  { ...mockCoin, id: "ethereum", name: "Ethereum", symbol: "eth" },
-  { ...mockCoin, id: "solana", name: "Solana", symbol: "sol" },
+  {
+    ...mockCoin,
+    id: "ethereum",
+    name: "Ethereum",
+    symbol: "eth",
+    market_cap_rank: 2,
+  },
+  {
+    ...mockCoin,
+    id: "solana",
+    name: "Solana",
+    symbol: "sol",
+    market_cap_rank: 5,
+  },
 ];
 
 describe("ListCoin Component", () => {

@@ -1,6 +1,7 @@
 import { Award, TrendingDown, TrendingUp } from "lucide-react";
 import type { Coin } from "../../types/crypto";
 import { Sparkline } from "../list/Sparkline";
+import { useAppContext } from "../../context/hooks/useAppContext";
 
 interface CoinCardProps {
   coin: Coin;
@@ -8,9 +9,20 @@ interface CoinCardProps {
 
 export const CoinCard = ({ coin }: CoinCardProps) => {
   const isPositive = coin.price_change_percentage_24h > 0;
+  const { setSelectedCoinId, setIsModalCoinVisible } = useAppContext();
+
+  const handleCardClick = () => {
+    setIsModalCoinVisible(true);
+    setSelectedCoinId(coin.id);
+  };
 
   return (
-    <div className="bg-slate-900/50 backdrop-blur-sm p-5 rounded-2xl border border-white/5 hover:border-brand/40 transition-all duration-300 group shadow-lg">
+    <div
+      className="bg-slate-900/50 backdrop-blur-sm p-5 rounded-2xl border 
+      border-white/5 hover:border-brand/40 transition-all duration-300 
+        group shadow-lg cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="relative">
