@@ -1,24 +1,21 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CoinCard } from "./CoinCard";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockCoin } from "../../test/mocks/mockCoin";
 import type { LineProps, ResponsiveContainerProps } from "recharts";
 
-vi.mock("../../context/hooks/useAppContext", () => ({
-  useAppContext: () => ({
-    setSelectedCoinId: vi.fn(),
-    setIsModalCoinVisible: vi.fn(),
-  }),
-}));
-
 const mockSetSelectedCoinId = vi.fn();
 const mockSetIsModalCoinVisible = vi.fn();
+const mockToggleFavorite = vi.fn();
+let mockFavorites: string[] = [];
 
 vi.mock("../../context/hooks/useAppContext", () => ({
   useAppContext: () => ({
     setSelectedCoinId: mockSetSelectedCoinId,
     setIsModalCoinVisible: mockSetIsModalCoinVisible,
+    favorites: mockFavorites,
+    toggleFavorite: mockToggleFavorite,
   }),
 }));
 
@@ -44,12 +41,24 @@ const negativeMockCoin = {
 };
 
 describe("CoinCard Component", () => {
-  vi.clearAllMocks();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockFavorites = [];
+  });
 
-  it("should render coin name and symbol correctly", () => {
-    render(<CoinCard coin={mockCoin} />);
-    expect(screen.getByTestId("nameCoinCard")).toHaveTextContent("Bitcoin");
-    expect(screen.getByTestId("symbolCoinCard")).toHaveTextContent(/btc/i);
+  describe("Display informations", () => {
+    it("should render coin name and symbol correctly", () => {
+      render(<CoinCard coin={mockCoin} />);
+      expect(screen.getByTestId("nameCoinCard")).toHaveTextContent("Bitcoin");
+      expect(screen.getByTestId("symbolCoinCard")).toHaveTextContent(/btc/i);
+    });
+
+    it("should format and display the current price in USD correctly", () => {
+      render(<CoinCard coin={mockCoin} />);
+      const price = screen.getByTestId("currentPriceCoinCard");
+      expect(price).toBeInTheDocument();
+      expect(price).toHaveTextContent(/\$50,000\.00/);
+    });
   });
 
   describe("Price Variation Styling", () => {
@@ -87,36 +96,31 @@ describe("CoinCard Component", () => {
     });
   });
 
-  it("should format and display the current price in USD correctly", () => {
-    render(<CoinCard coin={mockCoin} />);
-    const price = screen.getByTestId("currentPriceCoinCard");
-    expect(price).toBeInTheDocument();
-    expect(price).toHaveTextContent(/\$50,000\.00/);
-  });
+  describe("Sparkline", () => {
+    it("should display the sparkline if it exists", () => {
+      render(<CoinCard coin={mockCoin} />);
+      const sparkline = screen.getByTestId("sparklineCoinCard");
+      expect(sparkline).toBeInTheDocument();
+    });
 
-  it("should display the sparkline if it exists", () => {
-    render(<CoinCard coin={mockCoin} />);
-    const sparkline = screen.getByTestId("sparklineCoinCard");
-    expect(sparkline).toBeInTheDocument();
-  });
+    it("should render the sparkline with green color when price change is positive", () => {
+      render(<CoinCard coin={mockCoin} />);
+      const path = screen.getByTestId("sparklinePath");
+      expect(path).toHaveAttribute("stroke", "#22c55e");
+    });
 
-  it("should render the sparkline with green color when price change is positive", () => {
-    render(<CoinCard coin={mockCoin} />);
-    const path = screen.getByTestId("sparklinePath");
-    expect(path).toHaveAttribute("stroke", "#22c55e");
-  });
+    it("should render the sparkline whit red color when price change is negative", () => {
+      render(<CoinCard coin={negativeMockCoin} />);
+      const path = screen.getByTestId("sparklinePath");
+      expect(path).toHaveAttribute("stroke", "#ef4444");
+    });
 
-  it("should render the sparkline whit red color when price change is negative", () => {
-    render(<CoinCard coin={negativeMockCoin} />);
-    const path = screen.getByTestId("sparklinePath");
-    expect(path).toHaveAttribute("stroke", "#ef4444");
-  });
-
-  it("should not render sparkline when data is missing", () => {
-    const coinWithoutData = { ...mockCoin, sparkline_in_7d: undefined };
-    render(<CoinCard coin={coinWithoutData} />);
-    const sparkline = screen.queryByTestId("sparklinePath");
-    expect(sparkline).not.toBeInTheDocument();
+    it("should not render sparkline when data is missing", () => {
+      const coinWithoutData = { ...mockCoin, sparkline_in_7d: undefined };
+      render(<CoinCard coin={coinWithoutData} />);
+      const sparkline = screen.queryByTestId("sparklinePath");
+      expect(sparkline).not.toBeInTheDocument();
+    });
   });
 
   describe("Interactions", () => {
@@ -135,6 +139,42 @@ describe("CoinCard Component", () => {
 
       expect(mockSetSelectedCoinId).toHaveBeenCalledWith(mockCoin.id);
       expect(mockSetSelectedCoinId).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Favorite Coin", () => {
+    it("should render gray color if the coin is not favorited", () => {
+      render(<CoinCard coin={mockCoin} />);
+      const button = screen.getByTestId("favoriteBtnCoinCard");
+      const star = button.querySelector("svg");
+
+      expect(button).toHaveClass("text-gray-600");
+      expect(star).toHaveClass("fill-transparent");
+    });
+
+    it("should render yellow color if the coin is favorited", () => {
+      mockFavorites = [mockCoin.id];
+      render(<CoinCard coin={mockCoin} />);
+      const button = screen.getByTestId("favoriteBtnCoinCard");
+      const star = button.querySelector("svg");
+
+      expect(button).toHaveClass("text-brand");
+      expect(star).toHaveClass("fill-yellow-400");
+    });
+
+    it("should render the tooltip correctly if the coin isn't favorited", () => {
+      render(<CoinCard coin={mockCoin} />);
+      const button = screen.getByTestId("favoriteBtnCoinCard");
+      fireEvent.mouseOver(button);
+      expect(screen.getByText("Adicionar aos favoritos")).toBeInTheDocument();
+    });
+
+    it("should render the tooltip correctly if the coin is favorited", () => {
+      mockFavorites = [mockCoin.id];
+      render(<CoinCard coin={mockCoin} />);
+      const button = screen.getByTestId("favoriteBtnCoinCard");
+      fireEvent.mouseOver(button);
+      expect(screen.getByText("Remover dos favoritos")).toBeInTheDocument();
     });
   });
 });
