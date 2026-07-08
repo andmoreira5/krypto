@@ -38,7 +38,7 @@ export const getCoinHistoricalData = async (
       params: {
         vs_currency: "usd",
         days: days,
-        interval: "hourly",
+        interval: days > 7 ? "daily" : "hourly",
       },
     },
   );

@@ -6,8 +6,12 @@ import {
 import { useAppContext } from "../../../../context/hooks/useAppContext";
 
 export const useCoinModalData = () => {
-  const { isModalCoinVisible, selectedCoinId, setIsModalCoinVisible } =
-    useAppContext();
+  const {
+    isModalCoinVisible,
+    selectedCoinId,
+    setIsModalCoinVisible,
+    selectedDays,
+  } = useAppContext();
 
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,10 +24,9 @@ export const useCoinModalData = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getCoinHistoricalData(selectedCoinId, 7);
+        const data = await getCoinHistoricalData(selectedCoinId, selectedDays);
         setChartData(data);
-      } catch (err) {
-        console.error("Erro ao buscar dados históricos:", err);
+      } catch {
         setError("Failed to load historical charts. Please try again.");
       } finally {
         setIsLoading(false);
@@ -31,7 +34,7 @@ export const useCoinModalData = () => {
     };
 
     fetchHistoricalData();
-  }, [isModalCoinVisible, selectedCoinId]);
+  }, [isModalCoinVisible, selectedCoinId, selectedDays]);
 
   const handleClose = () => {
     setIsModalCoinVisible(false);

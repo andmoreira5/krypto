@@ -4,6 +4,7 @@ const STORAGE_KEY = "@krypto:favorites";
 
 export const useDataContext = () => {
   const [selectedCoinId, setSelectedCoinId] = useState<string | null>(null);
+  const [selectedDays, setSelectedDays] = useState<number>(7);
 
   const [favorites, setFavorites] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
@@ -39,5 +40,7 @@ export const useDataContext = () => {
     setSelectedCoinId,
     favorites,
     toggleFavorite,
+    selectedDays,
+    setSelectedDays,
   };
 };

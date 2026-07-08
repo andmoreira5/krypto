@@ -2,9 +2,14 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { CoinModal } from "./CoinModal";
 import { useCoinModalData } from "./hooks/useCoinModal";
+import { useAppContext } from "../../../context/hooks/useAppContext";
 
 vi.mock("./hooks/useCoinModal", () => ({
   useCoinModalData: vi.fn(),
+}));
+
+vi.mock("../../../context/hooks/useAppContext", () => ({
+  useAppContext: vi.fn(),
 }));
 
 vi.mock("./HeaderCoinModal", () => ({
@@ -37,9 +42,25 @@ vi.mock("recharts", async () => {
 
 describe("CoinModal Component", () => {
   const mockHandleClose = vi.fn();
+  const mockSetSelectedDays = vi.fn();
+
+  const baseContextMock = {
+    selectedDays: 7,
+    setSelectedDays: mockSetSelectedDays,
+    selectedCoinId: "bitcoin",
+    setSelectedCoinId: vi.fn(),
+    favorites: [] as string[],
+    toggleFavorite: vi.fn(),
+    isModalCoinVisible: true,
+    setIsModalCoinVisible: vi.fn(),
+    activeFilter: "ALL" as const,
+    setActiveFilter: vi.fn(),
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(useAppContext).mockReturnValue(baseContextMock);
   });
 
   it("should render nothing when isModalCoinVisible is false", () => {
@@ -143,5 +164,68 @@ describe("CoinModal Component", () => {
     fireEvent.click(content);
 
     expect(mockHandleClose).not.toHaveBeenCalled();
+  });
+
+  it("should render timeframe buttons with active state based on selectedDays", () => {
+    vi.mocked(useCoinModalData).mockReturnValue({
+      isModalCoinVisible: true,
+      selectedCoinId: "bitcoin",
+      chartData: [],
+      isLoading: false,
+      error: null,
+      handleClose: mockHandleClose,
+    });
+
+    vi.mocked(useAppContext).mockReturnValue({
+      ...baseContextMock,
+      selectedDays: 30,
+    });
+
+    render(<CoinModal />);
+
+    const btn1D = screen.getByTestId("timeframe-btn-1D");
+    const btn7D = screen.getByTestId("timeframe-btn-7D");
+    const btn1M = screen.getByTestId("timeframe-btn-1M");
+
+    expect(btn1D).toBeInTheDocument();
+    expect(btn7D).toBeInTheDocument();
+    expect(btn1M).toBeInTheDocument();
+
+    expect(btn1M.className).toContain("bg-blue-600");
+    expect(btn1D.className).not.toContain("bg-blue-600");
+  });
+
+  it("should call setSelectedDays with correct value when a timeframe button is clicked", () => {
+    vi.mocked(useCoinModalData).mockReturnValue({
+      isModalCoinVisible: true,
+      selectedCoinId: "bitcoin",
+      chartData: [],
+      isLoading: false,
+      error: null,
+      handleClose: mockHandleClose,
+    });
+
+    render(<CoinModal />);
+
+    const btn1D = screen.getByTestId("timeframe-btn-1D");
+    fireEvent.click(btn1D);
+
+    expect(mockSetSelectedDays).toHaveBeenCalledWith(1);
+  });
+
+  it("should disable timeframe buttons when chart is loading", () => {
+    vi.mocked(useCoinModalData).mockReturnValue({
+      isModalCoinVisible: true,
+      selectedCoinId: "bitcoin",
+      chartData: [],
+      isLoading: true,
+      error: null,
+      handleClose: mockHandleClose,
+    });
+
+    render(<CoinModal />);
+
+    const btn7D = screen.getByTestId("timeframe-btn-7D");
+    expect(btn7D).toBeDisabled();
   });
 });

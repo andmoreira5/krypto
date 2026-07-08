@@ -10,10 +10,18 @@ import { useCoinModalData } from "./hooks/useCoinModal";
 import { HeaderCoinModal } from "./HeaderCoinModal";
 import { ErrorCoinModal } from "./ErrorCoinModal";
 import { SkeletonCoinModal } from "./SkeletonCoinModal";
+import { useAppContext } from "../../../context/hooks/useAppContext";
+
+const TIMEFRAMES = [
+  { label: "1D", value: 1 },
+  { label: "7D", value: 7 },
+  { label: "1M", value: 30 },
+];
 
 export const CoinModal = () => {
   const { isModalCoinVisible, chartData, isLoading, error, handleClose } =
     useCoinModalData();
+  const { selectedDays, setSelectedDays } = useAppContext();
 
   if (!isModalCoinVisible) return null;
 
@@ -27,6 +35,13 @@ export const CoinModal = () => {
 
   const formatChartDate = (timestamp: number) => {
     const date = new Date(timestamp);
+    if (selectedDays === 1) {
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    }
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
@@ -38,10 +53,31 @@ export const CoinModal = () => {
     >
       <div
         data-testid="coinModalContent"
-        className="relative w-full max-w-3xl bg-slate-950 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6"
+        className="relative w-full max-w-4xl bg-slate-950 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6"
         onClick={(e) => e.stopPropagation()}
       >
         <HeaderCoinModal handleClose={handleClose} />
+        <div className="flex justify-center">
+          {!error && (
+            <div className="flex  items-center space-x-2 bg-slate-900/60 p-1 rounded-xl w-fit border border-white/5">
+              {TIMEFRAMES.map((tf) => (
+                <button
+                  key={tf.value}
+                  data-testid={`timeframe-btn-${tf.label}`}
+                  onClick={() => setSelectedDays(tf.value)}
+                  disabled={isLoading}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
+                    selectedDays === tf.value
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-50"
+                  }`}
+                >
+                  {tf.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div>
           {isLoading && <SkeletonCoinModal />}
