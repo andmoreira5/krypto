@@ -24,7 +24,7 @@ export const HomeCoinPage = () => {
             message={
               error instanceof Error
                 ? error.message
-                : "Erro na API da CoinGecko"
+                : "Failed to fetch CoinGecko API data"
             }
             onRetry={refetch}
           />
