@@ -17,8 +17,7 @@ export const ErrorState = ({ message, onRetry }: ErrorStateProps) => {
       </h2>
 
       <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-        {message ||
-          "Houve um problema ao sincronizar os dados com a CoinGecko. Por favor, tente novamente em alguns instantes."}
+        {message || "Failed to fetch CoinGecko API data. Try Again."}
       </p>
 
       <button

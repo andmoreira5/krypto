@@ -32,6 +32,7 @@ export const CoinCard = ({ coin }: CoinCardProps) => {
   return (
     <>
       <div
+        data-testid="coin-card"
         className="bg-slate-900/50 backdrop-blur-sm p-4 rounded-2xl border 
       border-white/5 hover:border-brand/40 transition-all duration-300 
         group shadow-lg cursor-pointer"

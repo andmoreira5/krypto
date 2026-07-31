@@ -57,7 +57,7 @@ describe("ListCoin Component", () => {
   it("should filter coins by name", () => {
     render(<ListCoins coins={mockCoins} />);
 
-    const input = screen.getByTestId("searchCoin");
+    const input = screen.getByTestId("search-coin");
     fireEvent.change(input, { target: { value: "Solana" } });
 
     expect(screen.getByText("Solana")).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe("ListCoin Component", () => {
   it("should filter coins by symbol (case-insensitive)", () => {
     render(<ListCoins coins={mockCoins} />);
 
-    const input = screen.getByTestId("searchCoin");
+    const input = screen.getByTestId("search-coin");
     fireEvent.change(input, { target: { value: "ETH" } });
 
     expect(screen.getByText("Ethereum")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("ListCoin Component", () => {
   it("should show empty state message when no results found", () => {
     render(<ListCoins coins={mockCoins} />);
 
-    const input = screen.getByTestId("searchCoin");
+    const input = screen.getByTestId("search-coin");
     fireEvent.change(input, { target: { value: "NonExistentCoin" } });
 
     expect(screen.getByText("No coins found matching")).toBeInTheDocument();
@@ -89,10 +89,10 @@ describe("ListCoin Component", () => {
   it("should clear search when the X button is clicked", () => {
     render(<ListCoins coins={mockCoins} />);
 
-    const input = screen.getByTestId("searchCoin");
+    const input = screen.getByTestId("search-coin");
     fireEvent.change(input, { target: { value: "Solana" } });
 
-    const button = screen.getByTestId("buttonSearchCoin");
+    const button = screen.getByTestId("button-search-coin");
     fireEvent.click(button);
 
     expect(input).toHaveValue("");

@@ -29,7 +29,8 @@ export const Header = ({ isFetching, onRefresh }: HeaderProps) => {
         <button
           onClick={onRefresh}
           disabled={isFetching}
-          title="Atualizar mercado"
+          data-testid="update-market"
+          title="Update market"
           className="p-2.5 hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-white/10 disabled:opacity-50"
         >
           <RefreshCw

@@ -29,13 +29,13 @@ export const ListCoins = ({ coins }: ListCoinProps) => {
             placeholder="Search coin by name or symbol..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            data-testid="searchCoin"
+            data-testid="search-coin"
             className="block w-full bg-[#111] border border-gray-800 rounded-xl py-2.5 pl-10 pr-10 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              data-testid="buttonSearchCoin"
+              data-testid="button-search-coin"
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300"
             >
               <X size={18} />
