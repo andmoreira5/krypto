@@ -47,12 +47,12 @@ export const CoinModal = () => {
 
   return (
     <div
-      data-testid="coinModalOverlay"
+      data-testid="coin-modal-overlay"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-300"
       onClick={handleClose}
     >
       <div
-        data-testid="coinModalContent"
+        data-testid="coin-modal-content"
         className="relative w-full max-w-4xl bg-slate-950 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6"
         onClick={(e) => e.stopPropagation()}
       >
@@ -88,7 +88,7 @@ export const CoinModal = () => {
 
           {!isLoading && !error && chartData.length > 0 && (
             <div
-              data-testid="modalChartContainer"
+              data-testid="modal-chart-container"
               style={{ minWidth: 0 }}
               className="space-y-4 animate-fade-in w-full h-52 mt-2 min-w-0"
             >

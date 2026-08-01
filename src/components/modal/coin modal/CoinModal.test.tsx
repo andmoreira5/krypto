@@ -89,7 +89,9 @@ describe("CoinModal Component", () => {
 
     render(<CoinModal />);
     expect(screen.getByTestId("mock-skeleton")).toBeInTheDocument();
-    expect(screen.queryByTestId("modalChartContainer")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("modal-chart-container"),
+    ).not.toBeInTheDocument();
   });
 
   it("should render the error component when an error occurs", () => {
@@ -125,7 +127,7 @@ describe("CoinModal Component", () => {
     render(<CoinModal />);
 
     expect(screen.getByTestId("mock-header")).toBeInTheDocument();
-    expect(screen.getByTestId("modalChartContainer")).toBeInTheDocument();
+    expect(screen.getByTestId("modal-chart-container")).toBeInTheDocument();
     expect(screen.queryByTestId("mock-skeleton")).not.toBeInTheDocument();
     expect(screen.queryByTestId("mock-error")).not.toBeInTheDocument();
   });
@@ -142,7 +144,7 @@ describe("CoinModal Component", () => {
 
     render(<CoinModal />);
 
-    const overlay = screen.getByTestId("coinModalOverlay");
+    const overlay = screen.getByTestId("coin-modal-overlay");
     fireEvent.click(overlay);
 
     expect(mockHandleClose).toHaveBeenCalledTimes(1);
@@ -160,7 +162,7 @@ describe("CoinModal Component", () => {
 
     render(<CoinModal />);
 
-    const content = screen.getByTestId("coinModalContent");
+    const content = screen.getByTestId("coin-modal-content");
     fireEvent.click(content);
 
     expect(mockHandleClose).not.toHaveBeenCalled();
