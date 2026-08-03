@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getCoinHistoricalData,
   type ChartDataPoint,
@@ -36,10 +36,10 @@ export const useCoinModalData = () => {
     fetchHistoricalData();
   }, [isModalCoinVisible, selectedCoinId, selectedDays]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsModalCoinVisible(false);
     setChartData([]);
-  };
+  }, [setIsModalCoinVisible]);
 
   return {
     isModalCoinVisible,

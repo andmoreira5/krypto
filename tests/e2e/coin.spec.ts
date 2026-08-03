@@ -57,4 +57,54 @@ test.describe("Coin Card Modal", () => {
       secondCoinNameRegex,
     );
   });
+
+  test("should refetch chart data and highlight button when changing timeframes", async ({
+    page,
+  }) => {
+    await page.route("**/api/v3/coins/*/market_chart*", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        json: { prices: [[1716380000000, 65000]] },
+      });
+    });
+
+    const coinCards = page.getByTestId("coin-card");
+    await coinCards.first().click();
+
+    const chartRequestPromise = page.waitForRequest(
+      (request) =>
+        request.url().includes("/api/v3/coins/") &&
+        request.url().includes("market_chart") &&
+        request.url().includes("days=1"),
+    );
+
+    const btn1D = page.getByTestId("timeframe-btn-1D");
+    await btn1D.click();
+
+    const request = await chartRequestPromise;
+
+    expect(request.method()).toBe("GET");
+
+    await expect(btn1D).toHaveClass(/bg-blue-600/);
+  });
+
+  test("should display error message when chart request fails", async ({
+    page,
+  }) => {
+    await page.route("**/api/v3/coins/*/market_chart*", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        json: { error: "failed do fetch data" },
+      });
+    });
+
+    const coinCards = page.getByTestId("coin-card");
+    await coinCards.first().click();
+
+    await expect(
+      page.getByText("Failed to load historical charts. Please try again."),
+    ).toBeVisible();
+  });
 });
