@@ -89,6 +89,17 @@ test.describe("Coin Card Modal", () => {
     await expect(btn1D).toHaveClass(/bg-blue-600/);
   });
 
+  test("should close modal when pressing Escape key", async ({ page }) => {
+    const coinCards = page.getByTestId("coin-card");
+    await coinCards.first().click();
+
+    const modalContent = page.getByTestId("coin-modal-content");
+    await expect(modalContent).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(modalContent).toBeHidden();
+  });
+
   test("should display error message when chart request fails", async ({
     page,
   }) => {

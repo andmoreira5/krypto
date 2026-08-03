@@ -41,6 +41,17 @@ export const useCoinModalData = () => {
     setChartData([]);
   }, [setIsModalCoinVisible]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isModalCoinVisible) {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalCoinVisible, handleClose]);
+
   return {
     isModalCoinVisible,
     selectedCoinId,
