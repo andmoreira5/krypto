@@ -19,7 +19,7 @@ const TIMEFRAMES = [
 ];
 
 export const CoinModal = () => {
-  const { isModalCoinVisible, chartData, isLoading, error, handleClose } =
+  const { isModalCoinVisible, data, isPending, error, handleClose } =
     useCoinModalData();
   const { selectedDays, setSelectedDays } = useAppContext();
 
@@ -65,7 +65,7 @@ export const CoinModal = () => {
                   key={tf.value}
                   data-testid={`timeframe-btn-${tf.label}`}
                   onClick={() => setSelectedDays(tf.value)}
-                  disabled={isLoading}
+                  disabled={isPending}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
                     selectedDays === tf.value
                       ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
@@ -80,13 +80,13 @@ export const CoinModal = () => {
         </div>
 
         <div>
-          {isLoading && <SkeletonCoinModal />}
+          {isPending && <SkeletonCoinModal />}
 
-          {error && !isLoading && (
+          {error && !isPending && (
             <ErrorCoinModal error={error} handleClose={handleClose} />
           )}
 
-          {!isLoading && !error && chartData.length > 0 && (
+          {!isPending && !error && data.length > 0 && (
             <div
               data-testid="modal-chart-container"
               style={{ minWidth: 0 }}
@@ -94,7 +94,7 @@ export const CoinModal = () => {
             >
               <ResponsiveContainer width="100%" height="100%" debounce={100}>
                 <AreaChart
-                  data={chartData}
+                  data={data}
                   margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
                 >
                   <defs>

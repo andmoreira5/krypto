@@ -45,8 +45,8 @@ describe("useCoinModalData Custom Hook", () => {
 
     expect(result.current.isModalCoinVisible).toBe(false);
     expect(result.current.selectedCoinId).toBe("bitcoin");
-    expect(result.current.chartData).toEqual([]);
-    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual([]);
+    expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeNull();
     expect(getCoinHistoricalData).not.toHaveBeenCalled();
   });
@@ -68,13 +68,13 @@ describe("useCoinModalData Custom Hook", () => {
 
     const { result } = renderHook(() => useCoinModalData());
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isPending).toBe(true);
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isPending).toBe(false);
     });
 
-    expect(result.current.chartData).toEqual(mockChartData);
+    expect(result.current.data).toEqual(mockChartData);
     expect(result.current.error).toBeNull();
     expect(getCoinHistoricalData).toHaveBeenCalledWith("bitcoin", 7);
   });
@@ -91,10 +91,10 @@ describe("useCoinModalData Custom Hook", () => {
     const { result } = renderHook(() => useCoinModalData());
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isPending).toBe(false);
     });
 
-    expect(result.current.chartData).toEqual([]);
+    expect(result.current.data).toEqual([]);
     expect(result.current.error).toBe(
       "Failed to load historical charts. Please try again.",
     );
@@ -112,7 +112,7 @@ describe("useCoinModalData Custom Hook", () => {
     const { result } = renderHook(() => useCoinModalData());
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isPending).toBe(false);
     });
 
     act(() => {
@@ -120,7 +120,7 @@ describe("useCoinModalData Custom Hook", () => {
     });
 
     expect(mockSetIsModalCoinVisible).toHaveBeenCalledWith(false);
-    expect(result.current.chartData).toEqual([]);
+    expect(result.current.data).toEqual([{ x: 123, y: 456 }]);
   });
 
   it("should re-fetch historical data when selectedDays is updated", async () => {

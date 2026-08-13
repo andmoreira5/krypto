@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import {
   getCoinHistoricalData,
   type ChartDataPoint,
@@ -6,6 +12,11 @@ import {
 import { useAppContext } from "../../../../context/hooks/useAppContext";
 
 export const useCoinModalData = () => {
+  interface ActionState {
+    data: ChartDataPoint[];
+    error: string | null;
+  }
+
   const {
     isModalCoinVisible,
     selectedCoinId,
@@ -13,33 +24,39 @@ export const useCoinModalData = () => {
     selectedDays,
   } = useAppContext();
 
-  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  async function fetchCoinDataAction(
+    _prevState: ActionState,
+    params: { coinId: string; days: number },
+  ): Promise<ActionState> {
+    try {
+      const data = await getCoinHistoricalData(params.coinId, params.days);
+      return { data, error: null };
+    } catch {
+      return {
+        data: [],
+        error: "Failed to load historical charts. Please try again.",
+      };
+    }
+  }
+
+  const [state, dispatchFetch, isPending] = useActionState(
+    fetchCoinDataAction,
+    { data: [], error: null },
+  );
+
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     if (!isModalCoinVisible || !selectedCoinId) return;
 
-    const fetchHistoricalData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getCoinHistoricalData(selectedCoinId, selectedDays);
-        setChartData(data);
-      } catch {
-        setError("Failed to load historical charts. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    startTransition(() => {
+      dispatchFetch({ coinId: selectedCoinId, days: selectedDays });
+    });
+  }, [isModalCoinVisible, selectedCoinId, selectedDays, dispatchFetch]);
 
-    fetchHistoricalData();
-  }, [isModalCoinVisible, selectedCoinId, selectedDays]);
-
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     setIsModalCoinVisible(false);
-    setChartData([]);
-  }, [setIsModalCoinVisible]);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,9 +72,9 @@ export const useCoinModalData = () => {
   return {
     isModalCoinVisible,
     selectedCoinId,
-    chartData,
-    isLoading,
-    error,
+    data: state.data,
+    isPending,
+    error: state.error,
     handleClose,
   };
 };

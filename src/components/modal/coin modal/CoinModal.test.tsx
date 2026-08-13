@@ -67,8 +67,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: false,
       selectedCoinId: null,
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -81,8 +81,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: true,
+      data: [],
+      isPending: true,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -98,8 +98,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: "Failed to fetch data",
       handleClose: mockHandleClose,
     });
@@ -118,8 +118,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: mockData,
-      isLoading: false,
+      data: mockData,
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -136,8 +136,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -154,8 +154,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -172,8 +172,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -201,8 +201,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: false,
+      data: [],
+      isPending: false,
       error: null,
       handleClose: mockHandleClose,
     });
@@ -219,8 +219,8 @@ describe("CoinModal Component", () => {
     vi.mocked(useCoinModalData).mockReturnValue({
       isModalCoinVisible: true,
       selectedCoinId: "bitcoin",
-      chartData: [],
-      isLoading: true,
+      data: [],
+      isPending: true,
       error: null,
       handleClose: mockHandleClose,
     });
